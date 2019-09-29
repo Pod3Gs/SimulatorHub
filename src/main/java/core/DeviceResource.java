@@ -12,6 +12,7 @@ import utils.ParseUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
 
 public class DeviceResource extends CoapResource {
   private byte[] data = null;
@@ -95,11 +96,13 @@ public class DeviceResource extends CoapResource {
       System.out.println("POST rawpayload is {" + Arrays.toString(rawPayload) + "}");
       System.out.println("POST rawpayload-coded is {" + s + "}");
       System.out.println("POST payload is {" + payload + "}");
+      List<String> uriPath = exchange.getRequestOptions().getUriPath();
+
       if (!sourseFrame.json.isSelected()) {
         sourseFrame.getTextArea.append(
             new MyDate().getTime()
                 + Constants.NEXT_LINE
-                + "服务器下发原始命令为："
+                + uriPath.toString()+"下发命令为："
                 + Constants.NEXT_LINE
                 + s
                 + Constants.NEXT_LINE
@@ -108,7 +111,7 @@ public class DeviceResource extends CoapResource {
         sourseFrame.getTextArea.append(
             new MyDate().getTime()
                 + Constants.NEXT_LINE
-                + "服务器下发命令为："
+                + uriPath.toString()+"下发命令为："
                 + Constants.NEXT_LINE
                 + payload
                 + Constants.NEXT_LINE
