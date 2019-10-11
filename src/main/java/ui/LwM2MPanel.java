@@ -6,11 +6,12 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 
-public class MyFrame extends JFrame {
+public class LwM2MPanel extends JPanel {
   public JTextField ipText;
   public JTextField verifyCodeText;
   public JTextField port;
   public JTextField pskText;
+  public JTextField resourceIdText;
 
   JButton sendBtn;
   JButton registerBtn;
@@ -23,41 +24,13 @@ public class MyFrame extends JFrame {
   public JRadioButton json;
   JRadioButton hex;
 
-  MQTTPanel mqttPanel;
-  LogPanel logPanel;
-  LwM2MPanel lwM2MPanel;
-
-  private boolean isSecure;
-
-  MyFrame() {
-    JFrame jFrame = new JFrame();
-    jFrame.setTitle("氦氪设备模拟器");
-    jFrame.setBounds(100, 60, 990, 755);
-    jFrame.setMinimumSize(new Dimension(990, 755));
-    jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-    JPanel titlePanel = new JPanel();
-    titlePanel.setLayout(new BorderLayout());
-    titlePanel.setPreferredSize(new Dimension(200, 110));
-    titlePanel.setBackground(new Color(0x00BFFF));
-    jFrame.getContentPane().add(titlePanel, BorderLayout.NORTH);
-    JLabel logo = createLabel("HEKR IoT");
-    logo.setForeground(Constants.MAIN_COLOR);
-    logo.setVerticalAlignment(SwingConstants.TOP);
-    logo.setHorizontalAlignment(SwingConstants.LEFT);
-    logo.setFont(new Font("意大利", Font.ITALIC, 43));
-    titlePanel.add(logo);
-
-    JTabbedPane tabbedPane = new JTabbedPane();
-    jFrame.getContentPane().add(tabbedPane, BorderLayout.CENTER);
-
-    JPanel nbiotPanel = new JPanel();
-    nbiotPanel.setLayout(new BorderLayout());
+  LwM2MPanel() {
+    super.setLayout(new BorderLayout());
 
     JPanel connectPanel = new JPanel();
     connectPanel.setBackground(Constants.MAIN_COLOR);
-    registerBtn = new JButton("注册设备");
-    connectPanel.add(createLabel("设备接入地址"));
+    registerBtn = new JButton("设备连接");
+    connectPanel.add(createLabel("连接地址"));
     ipText = createText("IP");
     ipText.setPreferredSize(new Dimension(90, 30));
     connectPanel.add(ipText);
@@ -65,15 +38,15 @@ public class MyFrame extends JFrame {
     port = createText("Port");
     port.setPreferredSize(new Dimension(50, 30));
     connectPanel.add(port);
-    connectPanel.add(createLabel("设备识别码"));
-    verifyCodeText = createText("verifyCode");
+    connectPanel.add(createLabel("IMEI"));
+    verifyCodeText = createText("IMEI");
     connectPanel.add(verifyCodeText);
-    psk = createLabel("PSK");
-    pskText = createText("PSK");
+    psk = createLabel("IMSI");
+    pskText = createText("IMSI");
     connectPanel.add(psk);
     connectPanel.add(pskText);
     connectPanel.add(registerBtn);
-    nbiotPanel.add(connectPanel, BorderLayout.NORTH);
+    super.add(connectPanel, BorderLayout.NORTH);
 
     JPanel sendPanel = new JPanel();
     sendPanel.setBackground(Constants.MAIN_COLOR);
@@ -85,9 +58,11 @@ public class MyFrame extends JFrame {
     sendTextArea.setFont(new Font("微软雅黑", Font.PLAIN, 14));
     sendTextArea.setLineWrap(true);
     JPanel sendCmd = new JPanel();
-    sendCmd.setPreferredSize(new Dimension(300, 30));
+    sendCmd.setPreferredSize(new Dimension(300, 40));
     sendCmd.setBackground(Constants.MAIN_COLOR);
-    sendCmd.add(createLabel("数据上报区域"));
+    sendCmd.add(createLabel("资源ID"));
+    resourceIdText = createText("id");
+    sendCmd.add(resourceIdText);
     sendPanel.add(sendCmd, BorderLayout.NORTH);
     JScrollPane sendText = new JScrollPane(sendTextArea);
     sendPanel.add(sendText, BorderLayout.CENTER);
@@ -102,8 +77,8 @@ public class MyFrame extends JFrame {
     hex.setSelected(true);
     buttonGroup.add(hex);
     buttonGroup.add(json);
-    control.add(hex);
-    control.add(json);
+//    control.add(hex);
+//    control.add(json);
     control.add(sendBtn);
     sendPanel.add(control, BorderLayout.SOUTH);
     sendPanel.add(createBlank(20, 0, Constants.MAIN_COLOR), BorderLayout.WEST);
@@ -119,7 +94,7 @@ public class MyFrame extends JFrame {
     getTextArea.setLineWrap(true);
     JPanel command = new JPanel();
     command.setBackground(Constants.MAIN_COLOR);
-    command.setPreferredSize(new Dimension(300, 30));
+    command.setPreferredSize(new Dimension(300, 40));
     command.add(createLabel("数据显示区域"), BorderLayout.NORTH);
     JScrollPane getText = new JScrollPane(getTextArea);
     tabPanel.add(getText, BorderLayout.CENTER);
@@ -131,18 +106,9 @@ public class MyFrame extends JFrame {
     tabPanel.add(createBlank(0, 39, Constants.MAIN_COLOR), BorderLayout.SOUTH);
     tabPanel.add(createBlank(20, 0, Constants.MAIN_COLOR), BorderLayout.EAST);
 
-    nbiotPanel.add(sendPanel, BorderLayout.WEST);
+    super.add(sendPanel, BorderLayout.WEST);
 
-    nbiotPanel.add(tabPanel, BorderLayout.CENTER);
-
-    tabbedPane.add("NB-IoT设备", nbiotPanel);
-    lwM2MPanel = new LwM2MPanel();
-    tabbedPane.add("LwM2M设备", lwM2MPanel);
-    mqttPanel = new MQTTPanel();
-    tabbedPane.add("MQTT设备", mqttPanel);
-    logPanel = new LogPanel();
-    tabbedPane.add("日志", logPanel);
-    jFrame.setVisible(true);
+    super.add(tabPanel, BorderLayout.CENTER);
   }
 
   private JLabel createLabel(String name) {
@@ -157,14 +123,6 @@ public class MyFrame extends JFrame {
     textField.setBorder(lineBorder);
     textField.addFocusListener(new JTextFieldHintListener(textField, msg));
     return textField;
-  }
-
-  public boolean isSecure() {
-    return isSecure;
-  }
-
-  public void setSecure(boolean secure) {
-    isSecure = secure;
   }
 
   private JPanel createBlank(int w, int h, Color color) {
